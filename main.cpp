@@ -1,4 +1,5 @@
 
+//v.0.1 @Marcin
 //Circuit:
 //LCD:
 // VSS - ground b-board
@@ -20,13 +21,14 @@
 //Ground and 5V from Arduino to breadboard
 //10k potentionmeter to +/- on breadboard
 
-
-
 //Joystick:
-//
-//
-//
+// + and - connected to the same row in breadboard
+//Button - A7, X pin - A2, Y pin - A1
 
+//LEDS
+//Leds connected to A8-A12 (+) then
+//using 300om resistors connected to negative
+//additional ground from Arduino 
 
 
 #include <LiquidCrystal.h>
@@ -50,8 +52,8 @@ String option3 = "Quote";
 String option4 = "Crazy";
 String randomsentence0 = "GG";
 String randomsentence10 = "EZ";
-String randomsentence1 = "Blizzard";
-String randomsentence11 = "sucks";
+String randomsentence1 = "Random";
+String randomsentence11 = "message";
 String randomsentence2 = "Hi";
 String randomsentence12 = "How are you";
 String randomsentence3 = "No idea";
@@ -69,7 +71,8 @@ String randomsentence18 = "?";
 String randomsentence9 = "Beep ";
 String randomsentence19 = "Error";
 
-byte heart[8] = 
+//creating my own character - arrow, using bitmap
+byte arrow[8] = 
 
               {
 
@@ -92,11 +95,11 @@ byte heart[8] =
               };
 
 void temp(){
+  //temperature method
   int tempReading = analogRead(tempPin);
   double tempK = log(10000.0 * ((1024.0 / tempReading - 1)));
   tempK = 1 / (0.001129148 + (0.000234125 + (0.0000000876741 * tempK * tempK )) * tempK );       //  Temp Kelvin
   float tempC = tempK - 273.15;            // Convert Kelvin to Celcius
-  float tempF = (tempC * 9.0)/ 5.0 + 32.0; // Convert Celcius to Fahrenheit
 
   // Display Temperature in C
   lcd.setCursor(0, 0);
@@ -118,7 +121,7 @@ void temp(){
   }
 }
 void print_random(){
-
+  //method printing random quote
   int randnumber = random(10);
   switch (randnumber) {
   case 0:
@@ -185,12 +188,10 @@ void print_random(){
     lcd.print(randomsentence19);
     delay(5000);    break;
 
-}
-
-
-
+  }
 }
 void led_on(){
+  //method turning on and off all leds in the circuit
   digitalWrite(led1, HIGH);
   digitalWrite(led2, HIGH);
   digitalWrite(led3, HIGH);
@@ -203,47 +204,43 @@ void led_on(){
   digitalWrite(led4, LOW);
   digitalWrite(led5, LOW);
 }
-void random_leds(){
-  for (int i = 0; i<150; i++){
-    int rand1 = random(70);
+void random_leds(int runtime = 150, int changetime = 70){
+  //method turning on and off random leds in the circuit, lasting random time
+  //default max runtime is 150 times blink time up to almost a second 
+  for (int i = 0; i<runtime; i++){
+    int rand1 = random(changetime);
     int rand2 = random(5);
     if (rand2 == 0){
       digitalWrite(led1, HIGH);
       delay(rand1);
       digitalWrite(led1, LOW);
-
     }
     else if (rand2 == 1){
       digitalWrite(led2, HIGH);
       delay(rand1);
       digitalWrite(led2, LOW);
-
     }
     else if (rand2 == 2){
       digitalWrite(led3, HIGH);
       delay(rand1);
       digitalWrite(led3, LOW);
-
     }
 
     else if (rand2 == 3){
       digitalWrite(led4, HIGH);
       delay(rand1);
       digitalWrite(led4, LOW);
-
     }
 
     else if (rand2 == 4){
       digitalWrite(led5, HIGH);
       delay(rand1);
       digitalWrite(led5, LOW);
-
     }
-
   }
 }
 int read_joystick(int current, int b) {
-  
+  //method reading current joystick position and returning new position if joystick moved or clicked 
   //reading x and y axis values
   int X_Axis = analogRead(joystick_x_pin);     // read the x axis value
   int Y_Axis = analogRead(joystick_y_pin);     // read the y axis value
@@ -252,7 +249,7 @@ int read_joystick(int current, int b) {
   if (b == 0){
     if(current == 1){
     lcd.setCursor(0, 0);
-    lcd.print("                     ");  
+    lcd.print("                     ");       //every time it has to clean the screen 
     lcd.setCursor(0, 1);
     lcd.print("                    ");
       //show temp for around 5 sec then clear the screen
@@ -260,7 +257,7 @@ int read_joystick(int current, int b) {
          temp();
       }
     lcd.setCursor(0, 0);
-    lcd.print("                     ");  
+    lcd.print("                     ");       //every time it has to clean the screen 
     lcd.setCursor(0, 1);
     lcd.print("                    ");
 
@@ -268,7 +265,7 @@ int read_joystick(int current, int b) {
     }
     else if(current == 3){
     lcd.setCursor(0, 0);
-    lcd.print("                     ");  
+    lcd.print("                     ");       //every time it has to clean the screen 
     lcd.setCursor(0, 1);
     lcd.print("                    ");
     print_random();
@@ -281,7 +278,7 @@ int read_joystick(int current, int b) {
     }
     else if(current == 2){
     lcd.setCursor(0, 0);
-    lcd.print("                     ");  
+    lcd.print("                     ");       //every time it has to clean the screen 
     lcd.setCursor(0, 1);
     lcd.print("                    ");
     lcd.setCursor(0, 0);
@@ -296,7 +293,7 @@ int read_joystick(int current, int b) {
     }
     else if(current == 4){
     lcd.setCursor(0, 0);
-    lcd.print("                     ");  
+    lcd.print("                     ");       //every time it has to clean the screen 
     lcd.setCursor(0, 1);
     lcd.print("                    ");
     lcd.setCursor(0, 0);
@@ -309,9 +306,7 @@ int read_joystick(int current, int b) {
        
     }
   } 
-  
-  
-  else if (X_Axis >= 900) {
+  else if (X_Axis >= 900) {             //moving right in the menu
     //RIGHT
     if(current == 1){
        current = 2;
@@ -327,7 +322,7 @@ int read_joystick(int current, int b) {
     }
   } 
   
-  else if (X_Axis <= 100) {
+  else if (X_Axis <= 100) {             //moving left in the menu
     //LEFT
     if(current == 1){
        current = 1;
@@ -344,7 +339,7 @@ int read_joystick(int current, int b) {
 
       } 
   
-  else if (Y_Axis >= 900) {
+  else if (Y_Axis >= 900) {             //moving up in the menu
     //UP
     if(current == 1){
        current = 1;
@@ -361,7 +356,7 @@ int read_joystick(int current, int b) {
  } 
       
       
-      else if (Y_Axis <= 100) {
+      else if (Y_Axis <= 100) {             //moving down in the menu
     //DOWN
     if(current == 1){
        current = 3;
@@ -381,6 +376,7 @@ int read_joystick(int current, int b) {
 }
 
 void menu1(){
+  //method for menu layout when cursor is at position 1
     lcd.setCursor(0, 0);
     lcd.print("\001");  
     lcd.print(option1);
@@ -393,6 +389,7 @@ void menu1(){
 
 }
 void menu2(){
+    //method for menu layout when cursor is at position 2
     lcd.setCursor(0, 0);
     lcd.print(option1);
     lcd.setCursor(9, 0);
@@ -405,6 +402,7 @@ void menu2(){
 
 }
 void menu3(){
+  //method for menu layout when cursor is at position 3
     lcd.setCursor(0, 0);
     lcd.print(option1);
     lcd.setCursor(9, 0);
@@ -417,6 +415,7 @@ void menu3(){
 
 }
 void menu4(){
+  //method for menu layout when cursor is at position 4
     lcd.setCursor(0, 0);
     lcd.print(option1);
     lcd.setCursor(9, 0);
@@ -426,21 +425,14 @@ void menu4(){
     lcd.setCursor(9, 1);
     lcd.print("\001");  
     lcd.print(option4);
-
 }
 
 void test(int b){
+  //testing sensitivity of new joystick/buttons
   lcd.setCursor(0, 0);
-
   int X_Axis = analogRead(joystick_x_pin);     // read the x axis value
   int Y_Axis = analogRead(joystick_y_pin);     // read the y axis value
   Y_Axis = map(Y_Axis, 0, 1023, 1023, 0);      // invert the input from the y axis so that pressing the stick forward gives larger values
-  
-
-//  int SwitchValue = digitalRead(joystick_switch_pin);  // read the state of the switch
-//  SwitchValue = map(SwitchValue, 0, 1, 1, 0);  // invert the input from the switch to be high when pressed
-
-  
    if (b == 0){
     lcd.print("Clicked");
     delay(500);
@@ -457,17 +449,14 @@ void test(int b){
     lcd.print("Down");
         delay(500);
   }
-
 }
-
 
 void setup()
 {
-  lcd.createChar ( 1, heart ); 
+  lcd.createChar ( 1, arrow );  //creating my custom character 
   lcd.begin(16, 2);
   pinMode(joystick_switch_pin, INPUT_PULLUP); 
-  //set all your leds to output, it is input by default
-  pinMode(led1, OUTPUT);
+  pinMode(led1, OUTPUT);          //setting A8-A12 to outputs, default is negative
   pinMode(led2, OUTPUT);
   pinMode(led3, OUTPUT);
   pinMode(led4, OUTPUT);
@@ -478,7 +467,7 @@ void loop()
 {
   buttonState = digitalRead(joystick_switch_pin);
   int b = buttonState;
-  
+  //displaying correct menu for each current state 
   if(current_main == 1){
     menu1();
   }
@@ -492,7 +481,7 @@ void loop()
     menu4();
   }
   current_main = read_joystick(current_main, b);
+  //some tests below if needed 
 //test(b);
 //  lcd.print(current_main);
-  
 }
